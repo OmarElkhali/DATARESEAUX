@@ -1,0 +1,92 @@
+/* CSS pour la section des activités */
+.Activite-wrappernn {
+    text-align: center;
+    color: black;
+    position: relative;
+    padding-bottom: 2rem;
+    margin-top: 100px; /* Ajouter une marge en haut pour éviter le chevauchement */
+}
+
+.Activite-title{
+    margin-bottom: 20px;
+}
+
+.Activite-container {
+    display: flex;
+    flex-direction: column; /* Organiser verticalement les conteneurs d'activités */
+    justify-content: center; /* Centrer verticalement les conteneurs d'activités */
+    align-items: center; /* Centrer horizontalement les conteneurs d'activités */
+    margin: 0 auto; /* Centrer le conteneur */
+    max-width: 1200px; /* Largeur maximale du conteneur */
+}
+
+/* Styles pour chaque activité */
+.INDUSTRIE,
+.INFRASTRUCTURE,
+.ENERGIE {
+    display: flex; /* Activer le modèle de boîte flexible */
+    flex-direction: row; /* Aligner le contenu verticalement */
+    align-items: center; /* Centrer le contenu verticalement */
+    width: 50rem; /* Réduire la largeur des activités */
+    height: 10rem; /* Permettre à la hauteur de s'ajuster automatiquement */
+    border: 2px solid rgb(0, 170, 255);
+    border-radius: 25% 0 0 0;
+    margin: 10px; /* Espacement entre les activités */
+}
+.INDUSTRIE{
+    margin-left: -8rem;
+    left: 0;
+    animation:stats-move 2s forwards;
+}
+.INFRASTRUCTURE{
+    margin-left: 2rem;
+    left: 0;
+    animation:stat2-move 2s forwards;
+}
+.ENERGIE{
+    margin-left: 12rem;
+    left: 0;
+    animation:stats-move 2s forwards;
+}
+
+.exemples1 {
+    display: flex; /* Activer le modèle de boîte flexible */
+    flex-direction: column; /* Aligner le contenu verticalement */
+    margin-left: 120px;
+}
+.exemples2 {
+    display: flex; /* Activer le modèle de boîte flexible */
+    flex-direction: column; /* Aligner le contenu verticalement */
+    margin-left: 10px;
+}
+.exemples3 {
+    display: flex; /* Activer le modèle de boîte flexible */
+    flex-direction: column; /* Aligner le contenu verticalement */
+    margin-left: 130px;
+}
+
+.icon-A {
+    width: 50px; /* Taille des icônes réduite */
+    height: auto; /* Permettre à la hauteur de s'ajuster automatiquement */
+    margin-right: 2rem;
+    margin-left: 2rem;
+}
+
+.im-A1 {
+    width: 250px; /* Taille des images réduite */
+    height: 150px; /* Permettre à la hauteur de s'ajuster automatiquement */
+    border-radius: 25% 0 0 0;  
+    margin-left: 35px; 
+}
+.im-A2 {
+    width: 250px; /* Taille des images réduite */
+    height: 150px; /* Permettre à la hauteur de s'ajuster automatiquement */
+    border-radius: 25% 0 0 0;  
+    margin-left: 27px; 
+}
+.im-A3 {
+    width: 250px; /* Taille des images réduite */
+    height: 150px; /* Permettre à la hauteur de s'ajuster automatiquement */
+    border-radius: 25% 0 0 0;  
+    margin-left: 38px; 
+}

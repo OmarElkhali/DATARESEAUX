@@ -1,0 +1,19 @@
+/* Footer.css */
+.footer {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #333;
+    color: white;
+}
+
+.contact-info {
+    flex: 1;
+}
+
+.map {
+    flex: 1;
+    text-align: right;
+}

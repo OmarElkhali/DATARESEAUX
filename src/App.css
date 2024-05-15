@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Ajoutez cette ligne pour pousser le composant Companies vers le bas */
+  
+}
+.light {
+  background-color: #ced8ff;
+}
+.dark {
+  background-color: #222;
+}

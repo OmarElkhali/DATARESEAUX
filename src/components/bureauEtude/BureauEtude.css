@@ -1,0 +1,116 @@
+.BEtude-warmp {
+    text-align: center;
+    color: black;
+    position: relative;
+    margin-top: 5rem;
+    margin-bottom: 5rem;
+    /* Remove padding-bottom */
+}
+
+.BEtude-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.BEtude {
+    width: 35rem;
+    position: absolute;
+    transform: translate(20%, 10%);
+    text-align: left;
+}
+
+.BEtude2 {
+    width: 35rem;
+    position: absolute;
+    transform: translate(120%, 10%);
+    text-align: left;
+}
+
+.BEtude3 {
+    width: 35rem;
+    position: absolute;
+    transform: translate(30%, -10%);
+    text-align: left;
+}
+
+.BEtude4 {
+    width: 35rem;
+    position: absolute;
+    transform: translate(120%, 50%);
+    text-align: left;
+}
+
+.BEtude-text {
+    color: rgb(111, 174, 17);
+    margin-bottom: 1rem;
+}
+
+.ulll {
+    list-style-type: none;
+    margin-top: 1rem;
+    padding: 0;
+    text-align: left;
+}
+
+.ketba {
+    font-weight: bold;
+    margin-top: 1rem;
+    color: rgb(0, 0, 0);
+}
+
+.BEtude-title {
+    margin-bottom: 1rem;
+}
+
+.BEtudeImg > img {
+    width: 325px;
+    height: 400px;
+    transform: translateX(100%);
+}
+
+.BEtudeImg2 > img {
+    width: 325px;
+    height: 400px;
+    transform: translateX(-100%);
+}
+
+.BEImg > img {
+    width: 425px;
+    height: 400px;
+    transform: translateX(50%);
+}
+
+.BEtudeImg4 > img {
+    width: 425px;
+    height: 400px;
+    transform: translate(-70%, -0%);
+}
+
+.limoni {
+    color: rgb(111, 174, 17);
+}
+
+.safety > img{
+    top: 50%;
+    left: 50%;
+    transform: translateX(100%);
+    width: 100px; /* Ajustez la largeur de l'image */
+    height: auto; /* Maintenez le ratio hauteur/largeur */
+}
+
+.safety {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px; /* Ajustez la largeur de l'image */
+    height: auto; /* Maintenez le ratio hauteur/largeur */
+}
+
+.BEtudeImg3 {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px; /* Ajustez la largeur de l'image */
+    height: auto; /* Maintenez le ratio hauteur/largeur */
+}
