@@ -1,0 +1,29 @@
+.references-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Centre horizontalement les éléments */
+}
+
+.reference {
+  display: flex;
+  justify-content: center; /* Centre l'image horizontalement à l'intérieur de chaque référence */
+  align-items: center; /* Centre l'image verticalement à l'intérieur de chaque référence */
+  margin-right: 20px;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reference:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.reference img {
+  width: 125px;
+  height: auto;
+  border-radius: 10px;
+}
+
+.reference img:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

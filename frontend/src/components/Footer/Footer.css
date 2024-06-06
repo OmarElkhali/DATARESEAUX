@@ -1,0 +1,49 @@
+/* Footer.css */
+.footer {
+    display: flex;
+    flex-direction: column; /* Afficher les éléments en colonne */
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    padding: 20px;
+    color: white;
+    background-color: black;
+}
+
+.logo-container >img{
+    width: 250px;
+    margin-bottom: 50px;
+}
+
+
+.contact-map-container {
+    display: flex; /* Appliquer flex seulement à cette partie */
+    align-items: center;
+    width: 100%; /* Ajuster la largeur */
+    margin-top: 20px; /* Espacement entre les autres éléments du footer */
+    margin-bottom: 100px;
+}
+
+.contact-info {
+    text-align: left;
+    transform: translateX(20%);
+}
+.map{
+    transform: translateX(100%);
+}
+
+.contact-info ul, .map iframe {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.contact-info h3 {
+    margin-bottom: 20px;
+}
+.contact-info li {
+    margin-bottom: 10px; /* Espace entre chaque élément de la liste */
+}
+.copyright {
+    margin-bottom: -100px;
+    background-color: black;
+}

@@ -1,0 +1,25 @@
+/* Infrastructure.css */
+.references {
+    margin-top: 20px;
+  }
+  
+  .references h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .references-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .reference {
+    margin-right: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .reference img {
+    max-width: 200px;
+    height: auto;
+  }
+  

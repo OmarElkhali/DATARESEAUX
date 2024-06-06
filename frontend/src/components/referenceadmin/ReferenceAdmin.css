@@ -1,0 +1,35 @@
+.reference-admin {
+  padding: 20px;
+}
+
+.reference-admin h2 {
+  margin-bottom: 20px;
+}
+
+.reference-admin form {
+  margin-bottom: 20px;
+}
+
+.reference-admin ul {
+  list-style: none;
+  padding: 0;
+}
+
+.reference-admin li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.reference-admin img {
+  max-width: 100px;
+  margin-right: 20px;
+}
+
+.reference-admin button {
+  background-color: #ff0000;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}

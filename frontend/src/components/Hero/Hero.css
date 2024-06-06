@@ -1,0 +1,225 @@
+.hero-wrappernn{
+    color: black;
+    position: relative;
+    padding-bottom: 2rem;
+}
+.dark .hero-wrappernn{
+    color: white;
+}
+.hero-container{
+    justify-content: space-between;
+    align-items: flex-end;
+}
+.hero-right {
+    width: 25rem;
+    height: 45rem;
+    overflow: hidden;
+    position:  absolute;
+    right: 2%;
+    top: -500%;
+    transform: translate(-50%, 55%);
+}
+.hero-title {
+    position: relative;
+    z-index: 1;
+}
+.hero-title>h1{
+    font-size: 3.8 rem;
+    font-weight: 600;
+    line-height: 4rem;
+    animation:stats-move 2s forwards;
+}
+
+.data {
+    color: rgb(0, 170, 255);
+    animation:stat2-move 2s forwards;
+}
+
+.reseaux {
+    color: rgb(0, 0, 0);
+    animation:stats-move 2s forwards;
+}
+
+.dark .reseaux {
+    color: white;
+    animation:stats-move 2s forwards;
+}
+
+
+.bleu-cercle {
+    position: absolute;
+    width: 4rem;
+    height: 4rem;
+    background: rgb(0, 170, 255);
+    box-shadow: 0 0 10px rgb(0, 170, 255),  0 0 5px #00aaff;
+    border-radius: 999px;
+    right: 55%;
+    top: 0.5%;
+    z-index: -1;
+    animation: basquet 3s forwards;
+}
+
+.state {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0.5rem;
+    align-items: center; /* Ajoutez cette ligne pour centrer verticalement */
+    flex-wrap: wrap; /* Ajoutez cette ligne pour permettre aux éléments de se déplacer à la ligne suivante si l'espace est insuffisant */
+}
+
+.icon {
+    font-size: 2rem;
+    margin-left: 5px;
+    color: rgb(0, 170, 255);
+
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center; /* Alignement horizontal */
+    margin: 5px;
+    animation:stats-move 2s forwards; 
+}
+.stat-3 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center; /* Alignement horizontal */
+    margin-top: 30px;
+    margin-left: 90px;
+    animation:stat3-move 2s forwards;
+}
+
+.ANS {
+    font-size: 1rem;
+}
+
+.count {
+    font-size: 2rem; /* Taille de police pour les chiffres */
+}
+
+.plus {
+    font-size: 2rem; /* Taille de police pour l'icône "+" */
+    color: rgb(0, 170, 255); /* Couleur bleue pour l'icône "+" */
+}
+
+.text {
+    font-size: 0.5rem; /* Taille de police pour le texte */
+    
+}
+
+.dark .text {
+    color: white;
+}
+
+
+
+.image-container {
+    position: absolute;
+    left: 30%;
+    top: 20%;
+    transform: translate(-50%, 40%);
+    outline: none;
+    width: 20rem;
+    height: 25rem;
+    overflow: hidden;
+    border-radius: 15rem 15rem 0 0;
+    box-shadow: 0 0 25px rgb(0, 170, 255), 0 0 100px #00aaff;
+    border: 3px solid rgba(0, 170, 255, 0.534);
+    outline: none;
+    animation:image-move 2s forwards, electric-shadow 5s infinite; /* Utilisez une nouvelle animation pour le shadow */
+}
+
+@keyframes electric {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes electric-shadow {
+    0% {
+        box-shadow: 0 0 15px rgb(0, 170, 255), 0 0 5px #00aaff;
+    }
+    25% {
+        box-shadow: 0 0 25px rgb(0, 170, 255), 0 0 25px #00aaff; /* Augmentez la taille de l'ombre à 30px */
+    }
+    50% {
+        box-shadow: 0 0 65px rgb(0, 170, 255), 0 0 35px #00aaff; /* Augmentez la taille de l'ombre à 30px */
+    }
+    75% {
+        box-shadow: 0 0 30px rgb(0, 170, 255), 0 0 25px #00aaff; /* Augmentez la taille de l'ombre à 30px */
+    }
+    100% {
+        box-shadow: 0 0 15px rgb(0, 170, 255), 0 0 5px #00aaff; /* Revenez à la taille d'ombre d'origine */
+    }
+}
+
+@keyframes image-move {
+    0% {
+        transform: translateX(-100%); 
+    }
+    100%{
+        transform: translateX(-50%),translateY(80%);
+    }
+}
+
+@keyframes stats-move {
+    0% {
+        transform: translateX(100%); 
+    }
+    100%{
+        transform: translateX(-50%),translateY(50%);
+    }
+}
+@keyframes stat2-move {
+    0% {
+        transform: translateX(-100%); 
+    }
+    100%{
+        transform: translateX(-50%),translateY(50%);
+    }
+}
+@keyframes stat3-move {
+    0% {
+        transform: translateY(100%); 
+    }
+    100%{
+        transform: translateX(-50%),translateY(50%);
+    }
+}
+
+@keyframes basquet {
+    0% {
+        transform: translateY(-100px); /* Déplacer vers le haut */
+    }
+    50% {
+        transform: translateY(0); /* Descendre à la position normale */
+    }
+    60% {
+        transform: translateY(10px); /* Rebondir légèrement vers le bas */
+    }
+    100% {
+        transform: translateY(0); /* Retour à la position normale */
+    }
+}
+
+
+.dark .image-container {
+    border: 2px solid rgba(255, 255, 255, 0.13); 
+}
+
+
+.image-container > img {
+    width: 100%; /* Pour que l'image occupe toute la largeur du conteneur */
+    height: 100%; /* Permet à la hauteur de s'ajuster automatiquement en fonction de la largeur */
+}
+
