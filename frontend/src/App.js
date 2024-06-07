@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useContext } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
 import Navbar from './components/Navbar/Navbar';
@@ -34,6 +33,7 @@ const App = () => {
   const current_theme = localStorage.getItem('current-theme');
   const [theme, setTheme] = useState(current_theme ? current_theme : 'light');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     localStorage.setItem("current-theme", theme);
@@ -54,22 +54,23 @@ const App = () => {
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
       <Router>
-        <AppContent theme={theme} setTheme={setTheme} />
+        <AppContent theme={theme} setTheme={setTheme} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       </Router>
     </AuthContext.Provider>
   );
 }
 
-const AppContent = ({ theme, setTheme }) => {
+const AppContent = ({ theme, setTheme, searchTerm, setSearchTerm }) => {
   const location = useLocation();
   const isAdminRoute = location.pathname === '/admin';
+  const isLoginRoute = location.pathname === '/login';
   const { isAuthenticated } = useContext(AuthContext);
 
   return (
     <>
-      {!isAdminRoute && (
+      {!isAdminRoute && !isLoginRoute && (
         <div className={`container ${theme}`}>
-          <Navbar theme={theme} setTheme={setTheme} />
+          <Navbar theme={theme} setTheme={setTheme} setSearchTerm={setSearchTerm} />
           <Hero theme={theme} />
         </div>
       )}
@@ -80,71 +81,70 @@ const AppContent = ({ theme, setTheme }) => {
             path="/admin"
             element={isAuthenticated ? <ReferenceAdmin /> : <Navigate to="/login" />}
           />
-          {/* Autres routes */}
           <Route path="/" element={
             <>
               <section id="our-values">
-                <OurValues />
+                <OurValues searchTerm={searchTerm} />
               </section>
               <section id="empreinte">
-                <Empriente />
+                <Empriente searchTerm={searchTerm} />
               </section>
               <section id="serv">
-                <Serv />
+                <Serv searchTerm={searchTerm} />
               </section>
               <section id="activite">
-                <Activite />
+                <Activite searchTerm={searchTerm} />
               </section>
               <section id="fort">
-                <Fort />
+                <Fort searchTerm={searchTerm} />
               </section>
               <section id="fort-c">
-                <FortC />
+                <FortC searchTerm={searchTerm} />
               </section>
               <section id="fort-c2">
-                <FortC2 />
+                <FortC2 searchTerm={searchTerm} />
               </section>
               <section id="fort-c3">
-                <FortC3 />
+                <FortC3 searchTerm={searchTerm} />
               </section>
               <section id="faible">
-                <Faible />
+                <Faible searchTerm={searchTerm} />
               </section>
               <section id="faible-c">
-                <FaibleC />
+                <FaibleC searchTerm={searchTerm} />
               </section>
               <section id="faible-c2">
-                <FaibleC2 />
+                <FaibleC2 searchTerm={searchTerm} />
               </section>
               <section id="faible-c3">
-                <FaibleC3 />
+                <FaibleC3 searchTerm={searchTerm} />
               </section>
               <section id="faible-c4">
-                <FaibleC4 />
+                <FaibleC4 searchTerm={searchTerm} />
               </section>
               <section id="bureau-etude">
-                <BureauEtude />
+                <BureauEtude searchTerm={searchTerm} />
               </section>
               <section id="humain-l">
-                <HumainL />
+                <HumainL searchTerm={searchTerm} />
               </section>
               <section id="securite">
-                <Securite />
+                <Securite searchTerm={searchTerm} />
               </section>
               <section id="distributeur">
-                <Distributeur />
+                <Distributeur searchTerm={searchTerm} />
               </section>
               <section id="industrie">
-                <Industrie />
+                <Industrie searchTerm={searchTerm} />
               </section>
               <section id="infrastructure">
-                <Infrastructure />
+                <Infrastructure searchTerm={searchTerm} />
               </section>
             </>
           } />
         </Routes>
       </div>
-      {!isAdminRoute && (
+      {!isAdminRoute && !isLoginRoute && (
         <div className={`container ${theme}`}>
           <Footer theme={theme} />
         </div>

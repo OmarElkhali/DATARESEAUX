@@ -1,38 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
+import { AuthContext } from '../../App';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+  const { setIsAuthenticated } = useContext(AuthContext);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3001/login', { username, password });
+      const response = await axios.post('http://localhost:3001/login', { username, password }, { withCredentials: true });
       setMessage(response.data.message);
+      if (response.data.message === 'Login successful') {
+        setIsAuthenticated(true);
+        navigate('/admin');
+      }
     } catch (error) {
-      setMessage(error.response.data.message);
+      const errorMessage = error.response && error.response.data ? error.response.data.message : 'An error occurred';
+      setMessage(errorMessage);
     }
   };
 
   return (
+    <section className="mr">
     <div className="login-container">
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username</label>
+        <div className='aaa'>
           <input
             type="text"
+            placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
         <div>
-          <label>Password</label>
           <input
             type="password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -41,6 +51,7 @@ const Login = () => {
       </form>
       {message && <p>{message}</p>}
     </div>
+    </section>
   );
 };
 
