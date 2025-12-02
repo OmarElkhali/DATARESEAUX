@@ -1,70 +1,234 @@
-# Getting Started with Create React App
+# DATARESEAUX
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Site web d'entreprise pour DATARESEAUX, spécialisée dans les réseaux électriques (courant fort/faible).
 
-## Available Scripts
+## 📋 Description
 
-In the project directory, you can run:
+DATARESEAUX est une application web complète comprenant :
+- Un **frontend React** pour l'interface utilisateur
+- Un **backend Node.js/Express** avec API REST
+- Une base de données **MySQL** pour la persistance des données
 
-### `npm start`
+## 🛠️ Technologies
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Frontend
+- React 18
+- React Router DOM
+- Axios
+- Material-UI (MUI)
+- CSS Modules
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Backend
+- Node.js
+- Express.js
+- MySQL2 avec connection pooling
+- Multer (gestion des uploads)
+- Helmet (sécurité HTTP)
+- Express Rate Limit (protection contre les attaques)
+- Express Validator (validation des données)
 
-### `npm test`
+## 📦 Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prérequis
+- Node.js >= 18.0.0
+- MySQL >= 8.0
+- npm ou yarn
 
-### `npm run build`
+### 1. Cloner le repository
+```bash
+git clone https://github.com/OmarElkhali/DATARESEAUX.git
+cd DATARESEAUX
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 2. Configuration du Backend
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+cd backend
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Créer un fichier `.env` basé sur `.env.example`:
+```bash
+cp .env.example .env
+```
 
-### `npm run eject`
+Configurer les variables d'environnement dans `.env`:
+```env
+DB_HOST=127.0.0.1
+DB_USER=root
+DB_PASSWORD=votre_mot_de_passe
+DB_NAME=datareseauxdb
+PORT=5000
+NODE_ENV=development
+SESSION_SECRET=votre_secret_key
+AUTH_PORT=3001
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 3. Configuration de la Base de Données
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Importer le schéma de base de données:
+```bash
+mysql -u root -p < datareseauxdb.sql
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 4. Configuration du Frontend
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+cd frontend
+npm install
+```
 
-## Learn More
+Créer un fichier `.env` basé sur `.env.example`:
+```bash
+cp .env.example .env
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Variables d'environnement frontend:
+```env
+REACT_APP_API_URL=http://localhost:5000
+REACT_APP_AUTH_URL=http://localhost:3001
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🚀 Démarrage
 
-### Code Splitting
+### Backend
+```bash
+cd backend
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+# Serveur API principal (port 5000)
+npm start
 
-### Analyzing the Bundle Size
+# Serveur d'authentification (port 3001)
+npm run start:auth
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+# Mode développement avec rechargement automatique
+npm run dev
+```
 
-### Making a Progressive Web App
+### Frontend
+```bash
+cd frontend
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+L'application sera disponible sur:
+- Frontend: http://localhost:3000
+- API Backend: http://localhost:5000
+- Auth Server: http://localhost:3001
 
-### Advanced Configuration
+## 📁 Structure du Projet
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```
+DATARESEAUX/
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   │   └── database.js        # Configuration de la base de données
+│   │   ├── controllers/
+│   │   │   └── referenceController.js
+│   │   ├── models/
+│   │   │   └── Reference.js
+│   │   ├── routes/
+│   │   │   ├── index.js
+│   │   │   └── referenceRoutes.js
+│   │   ├── middleware/
+│   │   │   ├── errorHandler.js    # Gestion centralisée des erreurs
+│   │   │   ├── validation.js      # Validation des entrées
+│   │   │   └── upload.js          # Configuration Multer
+│   │   ├── utils/
+│   │   │   └── helpers.js
+│   │   ├── app.js                 # Serveur API principal
+│   │   └── server.js              # Serveur d'authentification
+│   ├── uploads/                   # Fichiers uploadés
+│   ├── .env.example
+│   ├── .gitignore
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── shared/
+│   │   │   │   ├── ErrorBoundary/
+│   │   │   │   ├── LoadingSpinner/
+│   │   │   │   └── ServiceSection/
+│   │   │   └── ... (autres composants)
+│   │   ├── services/
+│   │   │   └── api.js             # Service API centralisé
+│   │   ├── assets/
+│   │   └── App.js
+│   ├── .env.example
+│   └── package.json
+├── datareseauxdb.sql              # Schéma de base de données
+└── README.md
+```
 
-### Deployment
+## 🔌 API Endpoints
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Références
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/references/all` | Récupérer toutes les références |
+| GET | `/api/references/all?category=industrie` | Filtrer par catégorie |
+| POST | `/api/references/add` | Ajouter une référence |
+| DELETE | `/api/references/delete/:id` | Supprimer une référence |
 
-### `npm run build` fails to minify
+### Authentification
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| POST | `/login` | Connexion utilisateur |
+| GET | `/checkAuth` | Vérifier l'authentification |
+| POST | `/logout` | Déconnexion |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Health Check
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/health` | Vérifier l'état du serveur |
+
+## 🔒 Sécurité
+
+Le projet implémente plusieurs mesures de sécurité :
+- **Helmet** : Headers HTTP sécurisés
+- **Rate Limiting** : Protection contre les attaques par force brute
+- **Validation des entrées** : express-validator
+- **Variables d'environnement** : Pas de secrets dans le code
+- **Session sécurisée** : Configuration httpOnly et secure cookies
+
+## 🧪 Tests
+
+```bash
+# Frontend
+cd frontend
+npm test
+
+# Backend (à implémenter)
+cd backend
+npm test
+```
+
+## 📝 Scripts Disponibles
+
+### Backend
+- `npm start` - Démarrer le serveur API
+- `npm run start:auth` - Démarrer le serveur d'authentification
+- `npm run dev` - Mode développement avec nodemon
+
+### Frontend
+- `npm start` - Démarrer en développement
+- `npm run build` - Build de production
+- `npm test` - Lancer les tests
+- `npm run deploy` - Déployer sur GitHub Pages
+
+## 🤝 Contribution
+
+1. Fork le projet
+2. Créer une branche (`git checkout -b feature/nouvelle-fonctionnalite`)
+3. Commit les changements (`git commit -m 'Ajout nouvelle fonctionnalité'`)
+4. Push la branche (`git push origin feature/nouvelle-fonctionnalite`)
+5. Ouvrir une Pull Request
+
+## 📄 Licence
+
+Ce projet est sous licence MIT.
+
+## 👥 Auteurs
+
+- **Omar Elkhali** - [OmarElkhali](https://github.com/OmarElkhali)

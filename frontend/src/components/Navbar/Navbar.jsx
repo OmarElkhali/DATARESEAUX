@@ -3,16 +3,10 @@ import './Navbar.css';
 import logo_light from '../../assets/DataReseaux-Logo-removebg.png';
 import search_icon_light from '../../assets/search-w.png';
 import search_icon_dark from '../../assets/search-b.png';
-import toogle_light from '../../assets/night.png';
-import toogle_dark from '../../assets/day.png';
 
 const Navbar = ({ theme, setTheme }) => {
     const [showNosServices, setShowNosServices] = useState(false);
     const [showConcernantNous, setShowConcernantNous] = useState(false);
-
-    const toggleMode = () => {
-        theme === 'light' ? setTheme('dark') : setTheme('light');
-    };
 
     return (
         <div className={`navbar ${theme}`}>
