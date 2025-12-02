@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
 import './App.css';
 import Navbar from './components/Navbar/Navbar';
 import Hero from './components/Hero/Hero';
@@ -24,8 +23,13 @@ import Distributeur from './components/bureauEtude/Distributeur';
 import Industrie from './components/reference/Industrie';
 import Infrastructure from './components/reference/Infrastructure';
 import Footer from './components/Footer/Footer';
-import ReferenceAdmin from './components/referenceadmin/ReferenceAdmin';
-import Login from './components/Login/Login';
+import ErrorBoundary from './components/shared/ErrorBoundary';
+import LoadingSpinner from './components/shared/LoadingSpinner';
+import { authService } from './services/api';
+
+// Lazy load admin components for better performance
+const ReferenceAdmin = lazy(() => import('./components/referenceadmin/ReferenceAdmin'));
+const Login = lazy(() => import('./components/Login/Login'));
 
 export const AuthContext = React.createContext();
 
@@ -34,6 +38,7 @@ const App = () => {
   const [theme, setTheme] = useState(current_theme ? current_theme : 'light');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     localStorage.setItem("current-theme", theme);
@@ -42,21 +47,31 @@ const App = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/checkAuth', { withCredentials: true });
+        const response = await authService.checkAuth();
         setIsAuthenticated(response.data.isAuthenticated);
       } catch (error) {
         setIsAuthenticated(false);
+      } finally {
+        setAuthLoading(false);
       }
     };
     checkAuth();
   }, []);
 
+  if (authLoading) {
+    return <LoadingSpinner message="Vérification de l'authentification..." />;
+  }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
-      <Router>
-        <AppContent theme={theme} setTheme={setTheme} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-      </Router>
-    </AuthContext.Provider>
+    <ErrorBoundary>
+      <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+        <Router>
+          <Suspense fallback={<LoadingSpinner />}>
+            <AppContent theme={theme} setTheme={setTheme} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+          </Suspense>
+        </Router>
+      </AuthContext.Provider>
+    </ErrorBoundary>
   );
 }
 
