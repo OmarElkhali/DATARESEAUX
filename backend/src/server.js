@@ -8,10 +8,13 @@ const { randomBytes, scrypt, timingSafeEqual } = require('crypto');
 const { corsOrigin, dbConfig, isProduction, sessionSecret } = require('./config');
 
 const app = express();
-const port = Number.parseInt(process.env.AUTH_PORT, 10) || 3001;
+const authPort = Number.parseInt(process.env.AUTH_PORT, 10) || 3001;
 const scryptAsync = promisify(scrypt);
 const HASH_KEY_LENGTH = 64;
 const SALT_BYTES = 16;
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_MAX_ATTEMPTS = 10;
+const loginAttempts = new Map();
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
@@ -48,13 +51,24 @@ const hashPassword = async (password) => {
   return `${salt}:${derivedKey.toString('hex')}`;
 };
 
+const constantTimeEqual = (value, expected) => {
+  const valueBuffer = Buffer.from(value);
+  const expectedBuffer = Buffer.from(expected);
+  const maxLength = Math.max(valueBuffer.length, expectedBuffer.length);
+  const paddedValue = Buffer.concat([valueBuffer, Buffer.alloc(maxLength - valueBuffer.length)]);
+  const paddedExpected = Buffer.concat([expectedBuffer, Buffer.alloc(maxLength - expectedBuffer.length)]);
+  const match = timingSafeEqual(paddedValue, paddedExpected);
+  return match && valueBuffer.length === expectedBuffer.length;
+};
+
 const verifyPassword = async (password, storedPassword) => {
   if (!storedPassword) {
     return { verified: false, needsUpgrade: false };
   }
 
   if (!storedPassword.includes(':')) {
-    return { verified: storedPassword === password, needsUpgrade: storedPassword === password };
+    const match = constantTimeEqual(storedPassword, password);
+    return { verified: match, needsUpgrade: match };
   }
 
   const [salt, key] = storedPassword.split(':');
@@ -70,7 +84,45 @@ const verifyPassword = async (password, storedPassword) => {
   return { verified: timingSafeEqual(keyBuffer, derivedKey), needsUpgrade: false };
 };
 
-app.post('/login', (req, res) => {
+const updatePasswordHash = (userId, passwordHash) => new Promise((resolve, reject) => {
+  db.query('UPDATE users SET password = ? WHERE id = ?', [passwordHash, userId], (err) => {
+    if (err) {
+      reject(err);
+      return;
+    }
+    resolve();
+  });
+});
+
+const regenerateSession = (request) => new Promise((resolve, reject) => {
+  request.session.regenerate((err) => {
+    if (err) {
+      reject(err);
+      return;
+    }
+    resolve();
+  });
+});
+
+const loginRateLimiter = (req, res, next) => {
+  const now = Date.now();
+  const key = req.ip;
+  const entry = loginAttempts.get(key);
+
+  if (!entry || now - entry.startTime > LOGIN_WINDOW_MS) {
+    loginAttempts.set(key, { count: 1, startTime: now });
+    return next();
+  }
+
+  if (entry.count >= LOGIN_MAX_ATTEMPTS) {
+    return res.status(429).json({ message: 'Too many login attempts. Please try again later.' });
+  }
+
+  entry.count += 1;
+  return next();
+};
+
+app.post('/login', loginRateLimiter, (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -78,7 +130,7 @@ app.post('/login', (req, res) => {
   }
 
   const query = 'SELECT id, username, password FROM users WHERE username = ?';
-  db.query(query, [username], (err, results) => {
+  db.query(query, [username], async (err, results) => {
     if (err) {
       console.error('Login query failed:', err.message);
       return res.status(500).json({ message: 'Login failed' });
@@ -88,38 +140,28 @@ app.post('/login', (req, res) => {
     }
 
     const user = results[0];
-    verifyPassword(password, user.password)
-      .then(async ({ verified, needsUpgrade }) => {
-        if (!verified) {
-          return res.status(401).json({ message: 'Invalid username or password' });
-        }
+    try {
+      const { verified, needsUpgrade } = await verifyPassword(password, user.password);
+      if (!verified) {
+        return res.status(401).json({ message: 'Invalid username or password' });
+      }
 
-        if (needsUpgrade) {
-          try {
-            const upgradedHash = await hashPassword(password);
-            db.query('UPDATE users SET password = ? WHERE id = ?', [upgradedHash, user.id], (updateErr) => {
-              if (updateErr) {
-                console.warn('Failed to upgrade password hash:', updateErr.message);
-              }
-            });
-          } catch (hashErr) {
-            console.warn('Failed to upgrade password hash:', hashErr.message);
-          }
+      if (needsUpgrade) {
+        try {
+          const upgradedHash = await hashPassword(password);
+          await updatePasswordHash(user.id, upgradedHash);
+        } catch (upgradeErr) {
+          console.warn('Failed to upgrade password hash:', upgradeErr.message);
         }
+      }
 
-        return req.session.regenerate((sessionErr) => {
-          if (sessionErr) {
-            console.error('Session regeneration failed:', sessionErr.message);
-            return res.status(500).json({ message: 'Login failed' });
-          }
-          req.session.user = { id: user.id, username: user.username };
-          return res.json({ message: 'Login successful' });
-        });
-      })
-      .catch((verifyErr) => {
-        console.error('Password verification failed:', verifyErr.message);
-        res.status(500).json({ message: 'Login failed' });
-      });
+      await regenerateSession(req);
+      req.session.user = { id: user.id, username: user.username };
+      return res.json({ message: 'Login successful' });
+    } catch (verifyErr) {
+      console.error('Password verification failed:', verifyErr.message);
+      return res.status(500).json({ message: 'Login failed' });
+    }
   });
 });
 
@@ -131,6 +173,6 @@ app.get('/checkAuth', (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+app.listen(authPort, () => {
+  console.log(`Server running on port ${authPort}`);
 });

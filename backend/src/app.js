@@ -12,6 +12,7 @@ const PORT = Number.parseInt(process.env.API_PORT, 10) || 5000;
 const allowedCategories = new Set(['infrastructure', 'industrie']);
 const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
+const INVALID_FILE_TYPE_MESSAGE = 'Invalid file type. Only JPEG, PNG, and WebP images are allowed.';
 
 app.disable('x-powered-by');
 app.use(cors({
@@ -51,7 +52,7 @@ const upload = multer({
       cb(null, true);
       return;
     }
-    cb(new Error('Invalid file type'));
+    cb(new Error(INVALID_FILE_TYPE_MESSAGE));
   }
 });
 
@@ -148,7 +149,7 @@ app.get('/api/references/all', referenceController.getAllReferences);
 app.delete('/api/references/delete/:id', referenceController.deleteReference);
 
 app.use((err, req, res, next) => {
-  if (err instanceof multer.MulterError || err.message === 'Invalid file type') {
+  if (err instanceof multer.MulterError || err.message === INVALID_FILE_TYPE_MESSAGE) {
     return res.status(400).send({ message: err.message });
   }
   console.error('Unhandled error:', err.message);
