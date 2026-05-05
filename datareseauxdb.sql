@@ -122,7 +122,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`) VALUES
-(1, 'root', '%DaTaReSeauX%');
+(1, 'root', 'e2b01dcb316589cc18fc570b63b74a1d:6686ffd2f28ebbcd47d100f2b0e75f52cc44612c7fef7676ffa5bd286b4a6a78535cab5768c1ea632bfda345b9597fa369a4ba240f3893235d5caf0e9d88c542');
 
 --
 -- Index pour les tables déchargées

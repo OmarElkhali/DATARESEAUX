@@ -1,5 +1,20 @@
 # Getting Started with Create React App
 
+## Backend configuration
+
+Les services backend dans `backend/src` utilisent des variables d'environnement :
+
+- `DB_HOST` (défaut : `127.0.0.1`)
+- `DB_USER` (défaut : `root`)
+- `DB_PASSWORD` (requis en production)
+- `DB_NAME` (défaut : `datareseauxdb`)
+- `CORS_ORIGIN` (défaut : `http://localhost:3000`)
+- `SESSION_SECRET` (requis en production pour l'auth)
+- `AUTH_PORT` (défaut : `3001`)
+- `API_PORT` (défaut : `5000`)
+
+Les mots de passe utilisateur sont stockés sous forme de hash scrypt au format `salt:hash`. Les mots de passe en clair existants sont automatiquement migrés au prochain login.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

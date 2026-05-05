@@ -4,24 +4,29 @@ const path = require('path');
 const mysql = require('mysql');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const { corsOrigin, dbConfig } = require('./config');
 
 // Création et configuration de l'application Express
 const app = express();
-app.use(cors());
-app.use(bodyParser.json());
+const PORT = Number.parseInt(process.env.API_PORT, 10) || 5000;
+const allowedCategories = new Set(['infrastructure', 'industrie']);
+const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
+
+app.disable('x-powered-by');
+app.use(cors({
+  origin: corsOrigin,
+  credentials: true
+}));
+app.use(bodyParser.json({ limit: '1mb' }));
 app.use('/uploads', express.static('uploads'));
 
-const db = mysql.createConnection({
-  host: '127.0.0.1',
-  user: 'root',
-  password: 'omar', // Remplacez par votre mot de passe
-  database: 'datareseauxdb'
-});
+const db = mysql.createConnection(dbConfig);
 
 db.connect(err => {
   if (err) {
     console.error('Erreur de connexion: ' + err.stack);
-    return;
+    process.exit(1);
   }
   console.log('Connecté à la base de données avec l\'id ' + db.threadId);
 });
@@ -36,7 +41,19 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: MAX_UPLOAD_SIZE
+  },
+  fileFilter: (req, file, cb) => {
+    if (allowedMimeTypes.has(file.mimetype)) {
+      cb(null, true);
+      return;
+    }
+    cb(new Error('Invalid file type'));
+  }
+});
 
 // Modèle de référence
 const Reference = function(reference) {
@@ -77,8 +94,15 @@ Reference.remove = (id, result) => {
 // Contrôleur de référence
 const referenceController = {
   addReference: (req, res) => {
+    if (!req.file) {
+      return res.status(400).send({ message: 'Logo file is required' });
+    }
+    const category = req.body.category;
+    if (!allowedCategories.has(category)) {
+      return res.status(400).send({ message: 'Invalid category' });
+    }
     const logoPath = req.file.path;
-    const newReference = new Reference({ logo_path: logoPath, category: req.body.category });
+    const newReference = new Reference({ logo_path: logoPath, category });
 
     Reference.create(newReference, (err, data) => {
       if (err) res.status(500).send({ message: err.message });
@@ -105,7 +129,10 @@ const referenceController = {
   },
 
   deleteReference: (req, res) => {
-    const id = req.params.id;
+    const id = Number.parseInt(req.params.id, 10);
+    if (Number.isNaN(id)) {
+      return res.status(400).send({ message: 'Invalid reference id' });
+    }
 
     Reference.remove(id, (err, data) => {
       if (err) res.status(500).send({ message: err.message });
@@ -120,8 +147,15 @@ app.post('/api/references/add', upload.single('logo'), referenceController.addRe
 app.get('/api/references/all', referenceController.getAllReferences);
 app.delete('/api/references/delete/:id', referenceController.deleteReference);
 
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError || err.message === 'Invalid file type') {
+    return res.status(400).send({ message: err.message });
+  }
+  console.error('Unhandled error:', err.message);
+  return res.status(500).send({ message: 'Internal server error' });
+});
+
 // Démarrage du serveur
-const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
