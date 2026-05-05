@@ -3,6 +3,8 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const session = require('express-session');
+const csrf = require('csurf');
+const rateLimit = require('express-rate-limit');
 const { promisify } = require('util');
 const { randomBytes, scrypt, timingSafeEqual } = require('crypto');
 const { corsOrigin, dbConfig, isProduction, sessionSecret } = require('./config');
@@ -14,13 +16,13 @@ const HASH_KEY_LENGTH = 64;
 const SALT_BYTES = 16;
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_MAX_ATTEMPTS = 10;
-const loginAttempts = new Map();
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
 app.use(cors({
   origin: corsOrigin,
-  credentials: true
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'X-CSRF-Token']
 }));
 app.use(bodyParser.json({ limit: '1mb' }));
 app.use(session({
@@ -34,6 +36,8 @@ app.use(session({
     maxAge: 1000 * 60 * 60
   }
 }));
+const csrfProtection = csrf();
+app.use(csrfProtection);
 
 const db = mysql.createConnection(dbConfig);
 
@@ -55,10 +59,13 @@ const constantTimeEqual = (value, expected) => {
   const valueBuffer = Buffer.from(value);
   const expectedBuffer = Buffer.from(expected);
   const maxLength = Math.max(valueBuffer.length, expectedBuffer.length);
-  const paddedValue = Buffer.concat([valueBuffer, Buffer.alloc(maxLength - valueBuffer.length)]);
-  const paddedExpected = Buffer.concat([expectedBuffer, Buffer.alloc(maxLength - expectedBuffer.length)]);
-  const match = timingSafeEqual(paddedValue, paddedExpected);
-  return match && valueBuffer.length === expectedBuffer.length;
+  const paddedValue = Buffer.alloc(maxLength + 4);
+  const paddedExpected = Buffer.alloc(maxLength + 4);
+  valueBuffer.copy(paddedValue);
+  expectedBuffer.copy(paddedExpected);
+  paddedValue.writeUInt32BE(valueBuffer.length, maxLength);
+  paddedExpected.writeUInt32BE(expectedBuffer.length, maxLength);
+  return timingSafeEqual(paddedValue, paddedExpected);
 };
 
 const verifyPassword = async (password, storedPassword) => {
@@ -104,23 +111,17 @@ const regenerateSession = (request) => new Promise((resolve, reject) => {
   });
 });
 
-const loginRateLimiter = (req, res, next) => {
-  const now = Date.now();
-  const key = req.ip;
-  const entry = loginAttempts.get(key);
+const loginRateLimiter = rateLimit({
+  windowMs: LOGIN_WINDOW_MS,
+  max: LOGIN_MAX_ATTEMPTS,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many login attempts. Please try again later.' }
+});
 
-  if (!entry || now - entry.startTime > LOGIN_WINDOW_MS) {
-    loginAttempts.set(key, { count: 1, startTime: now });
-    return next();
-  }
-
-  if (entry.count >= LOGIN_MAX_ATTEMPTS) {
-    return res.status(429).json({ message: 'Too many login attempts. Please try again later.' });
-  }
-
-  entry.count += 1;
-  return next();
-};
+app.get('/csrf', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
 
 app.post('/login', loginRateLimiter, (req, res) => {
   const { username, password } = req.body;
@@ -171,6 +172,14 @@ app.get('/checkAuth', (req, res) => {
   } else {
     res.json({ isAuthenticated: false });
   }
+});
+
+app.use((err, req, res, next) => {
+  if (err.code === 'EBADCSRFTOKEN') {
+    return res.status(403).json({ message: 'Invalid CSRF token' });
+  }
+  console.error('Unhandled error:', err.message);
+  return res.status(500).json({ message: 'Internal server error' });
 });
 
 app.listen(authPort, () => {

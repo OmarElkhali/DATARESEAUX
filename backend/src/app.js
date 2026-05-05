@@ -131,7 +131,7 @@ const referenceController = {
 
   deleteReference: (req, res) => {
     const id = Number.parseInt(req.params.id, 10);
-    if (Number.isNaN(id)) {
+    if (Number.isNaN(id) || id <= 0) {
       return res.status(400).send({ message: 'Invalid reference id' });
     }
 
@@ -149,8 +149,14 @@ app.get('/api/references/all', referenceController.getAllReferences);
 app.delete('/api/references/delete/:id', referenceController.deleteReference);
 
 app.use((err, req, res, next) => {
-  if (err instanceof multer.MulterError || err.message === INVALID_FILE_TYPE_MESSAGE) {
-    return res.status(400).send({ message: err.message });
+  if (err.message === INVALID_FILE_TYPE_MESSAGE) {
+    return res.status(400).send({ message: INVALID_FILE_TYPE_MESSAGE });
+  }
+  if (err instanceof multer.MulterError) {
+    const message = err.code === 'LIMIT_FILE_SIZE'
+      ? 'File too large. Max size is 5MB.'
+      : 'Invalid upload request.';
+    return res.status(400).send({ message });
   }
   console.error('Unhandled error:', err.message);
   return res.status(500).send({ message: 'Internal server error' });

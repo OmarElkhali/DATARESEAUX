@@ -14,6 +14,7 @@ Les services backend dans `backend/src` utilisent des variables d'environnement 
 - `API_PORT` (défaut : `5000`)
 
 Les mots de passe utilisateur sont stockés sous forme de hash scrypt au format `salt:hash`. Les mots de passe en clair existants sont automatiquement migrés au prochain login.
+L'authentification utilise une protection CSRF : récupérez un jeton via `GET /csrf` puis envoyez-le dans l'en-tête `X-CSRF-Token` lors du `POST /login`.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
