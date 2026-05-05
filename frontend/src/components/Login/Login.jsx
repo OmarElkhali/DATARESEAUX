@@ -8,13 +8,29 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [csrfToken, setCsrfToken] = useState('');
   const navigate = useNavigate();
   const { setIsAuthenticated } = useContext(AuthContext);
+
+  const fetchCsrfToken = async () => {
+    if (csrfToken) {
+      return csrfToken;
+    }
+    const response = await axios.get('http://localhost:3001/csrf', { withCredentials: true });
+    const token = response.data.csrfToken;
+    setCsrfToken(token);
+    return token;
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3001/login', { username, password }, { withCredentials: true });
+      const token = await fetchCsrfToken();
+      const response = await axios.post(
+        'http://localhost:3001/login',
+        { username, password },
+        { withCredentials: true, headers: { 'X-CSRF-Token': token } }
+      );
       setMessage(response.data.message);
       if (response.data.message === 'Login successful') {
         setIsAuthenticated(true);
